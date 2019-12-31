@@ -48,7 +48,7 @@ public class IfElse {
 	/**
 	 * Constructor sets PluginStepContext.
 	 *
-	 * @param ctx
+	 * @param ctx Plugin step context.
 	 */
 	public IfElse(PluginStepContext ctx) {
 		this.ctx = ctx;

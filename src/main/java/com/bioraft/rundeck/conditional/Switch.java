@@ -33,7 +33,7 @@ public class Switch {
 	/**
 	 * Constructor sets PluginStepContext.
 	 *
-	 * @param ctx
+	 * @param ctx Plugin step context
 	 */
 	public Switch(PluginStepContext ctx) {
 		this.ctx = ctx;
@@ -89,10 +89,10 @@ public class Switch {
 	/**
 	 * Adds output to shared context, also elevating to global if requested.
 	 * 
-	 * @param elevate
-	 * @param group
-	 * @param name
-	 * @param value
+	 * @param elevate Elevate to global context?
+	 * @param group Variable group.
+	 * @param name Variable name.
+	 * @param value Variable value.
 	 */
 	private void addOutput(boolean elevate, String group, String name, String value) {
 		ctx.getOutputContext().addOutput(group, name, value);

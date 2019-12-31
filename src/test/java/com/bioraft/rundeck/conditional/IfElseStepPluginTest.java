@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.dtolabs.rundeck.core.data.DataContext;
 import com.dtolabs.rundeck.core.execution.workflow.SharedOutputContext;
 import com.dtolabs.rundeck.core.execution.workflow.steps.StepException;
 import com.dtolabs.rundeck.plugins.PluginLogger;
@@ -54,9 +53,6 @@ public class IfElseStepPluginTest {
 	
 	@Mock
 	SharedOutputContext sharedOutputContext;
-
-	@Mock
-	DataContext dataContext;
 
 	@Before
 	public void setUp() {

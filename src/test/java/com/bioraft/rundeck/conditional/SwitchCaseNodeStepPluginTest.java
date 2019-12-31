@@ -32,7 +32,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.dtolabs.rundeck.core.common.INodeEntry;
-import com.dtolabs.rundeck.core.data.DataContext;
 import com.dtolabs.rundeck.core.execution.workflow.SharedOutputContext;
 import com.dtolabs.rundeck.core.execution.workflow.steps.node.NodeStepException;
 import com.dtolabs.rundeck.plugins.PluginLogger;
@@ -60,9 +59,6 @@ public class SwitchCaseNodeStepPluginTest {
 	SharedOutputContext sharedOutputContext;
 
 	@Mock
-	DataContext dataContext;
-
-	@Mock
 	INodeEntry node;
 
 	@Before
@@ -79,7 +75,7 @@ public class SwitchCaseNodeStepPluginTest {
 	@Test
 	public void runTestTwo() throws NodeStepException {
 		Map<String, String> cases = ImmutableMap.<String, String>builder().put("k1", "v1").put("k2", "v2").build();
-		this.runTest("v2", "k2", cases, "any");
+		this.runTest("v2", "k2", cases, "thing");
 	}
 
 	@Test
@@ -92,13 +88,13 @@ public class SwitchCaseNodeStepPluginTest {
 	public void runTestDefaultIsNull() throws NodeStepException {
 		Map<String, Object> configuration = new HashMap<>();
 		configuration.put("defaultValue", null);
-		this.runTestNoDefault("any", "k3", configuration);
+		this.runTestNoDefault(configuration);
 	}
 
 	@Test
 	public void runTestNoDefaultValue() throws NodeStepException {
 		Map<String, Object> configuration = new HashMap<>();
-		this.runTestNoDefault("any", "k3", configuration);
+		this.runTestNoDefault(configuration);
 	}
 
 	private void runTest(String expected, String testValue, Map<String, String> cases, String defaultValue)
@@ -106,12 +102,12 @@ public class SwitchCaseNodeStepPluginTest {
 		String group = "raft";
 		String name = "test";
 		StringBuffer caseString = new StringBuffer();
-		cases.forEach((k, v) -> caseString.append(k + ":" + v + ";"));
+		cases.forEach((k, v) -> caseString.append(k).append(":").append(v).append(";"));
 
 		Map<String, Object> configuration = new HashMap<>();
 		configuration.put("group", group);
 		configuration.put("name", name);
-		configuration.put("cases", "k1:v1;k2:v2");
+		configuration.put("cases", caseString);
 		configuration.put("testValue", testValue);
 		configuration.put("defaultValue", defaultValue);
 
@@ -123,14 +119,14 @@ public class SwitchCaseNodeStepPluginTest {
 		verify(sharedOutputContext, times(1)).addOutput(eq(group), eq(name), eq(expected));
 	}
 
-	public void runTestNoDefault(String expected, String testValue, Map<String, Object> configuration)
+	public void runTestNoDefault(Map<String, Object> configuration)
 			throws NodeStepException {
 		String group = "raft";
 		String name = "test";
 
 		Map<String, String> cases = ImmutableMap.<String, String>builder().put("k1", "v1").put("k2", "v2").build();
 		StringBuilder caseString = new StringBuilder();
-		cases.forEach((k, v) -> caseString.append(k + ":" + v + ";"));
+		cases.forEach((k, v) -> caseString.append(k).append(":").append(v).append(";"));
 		configuration.put("cases", caseString.toString());
 
 		configuration.put("group", group);
