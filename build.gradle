@@ -10,19 +10,25 @@ apply plugin: 'idea'
 sourceCompatibility = 1.8
 defaultTasks 'clean','build'
 ext.rundeckPluginVersion = '1.2'
-ext.pluginClassNames='com.bioraft.rundeck.conditional.IfElseNodeStepPlugin,com.bioraft.rundeck.conditional.IfElseStepPlugin,com.bioraft.rundeck.conditional.SwitchCaseNodeStepPlugin,com.bioraft.rundeck.conditional.SwitchCaseStepPlugin'
+ext.pluginClassNames='com.bioraft.rundeck.conditional.IfElseNodeStepPlugin,' +
+    'com.bioraft.rundeck.conditional.IfElseStepPlugin,' +
+    'com.bioraft.rundeck.conditional.SwitchCaseNodeStepPlugin,' +
+    'com.bioraft.rundeck.conditional.SwitchCaseStepPlugin'
 ext.pluginName = 'RunDeck Conditional Logic Plugin'
 ext.pluginDescription = 'Execute conditional logic in RunDeck workflows'
 
 scmVersion {
     ignoreUncommittedChanges = true
     tag {
+        // Ignore tags that begin with <prefix><versionSeparator>, include all tags
+        // if prefix is empty.
         prefix = ''
         versionSeparator = ''
+
+        // Append .0 to satisfy SemVer if the tag version is only X.Y
         def origDeserialize=deserialize
-        //apend .0 to satisfy semver if the tag version is only X.Y
         deserialize = { config, position, tagName ->
-            def orig = origDeserialize(config, position, tagName)
+            String orig = origDeserialize(config, position, tagName)
             if (orig.split('\\.').length < 3) {
                 orig += ".0"
             }
@@ -32,9 +38,7 @@ scmVersion {
 }
 project.version = scmVersion.version
 
-
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
@@ -59,7 +63,6 @@ dependencies {
             'org.powermock:powermock-api-mockito:1.5'
     )
 }
-
 
 // task to copy plugin libs to output/lib dir
 task copyToLib(type: Copy) {

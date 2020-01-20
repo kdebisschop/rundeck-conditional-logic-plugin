@@ -75,11 +75,13 @@ public class Switch {
 	 * @return True if matched, false otherwise.
 	 */
 	public boolean switchCase(String group, String name, String cases, String test, boolean elevate) {
-		for (String keyValue : cases.split(";")) {
+		for (String keyValue : cases.split(",")) {
 			String[] values = keyValue.split(":");
-			if (test.equals(values[0])) {
-				addOutput(elevate, group, name, values[1]);
-				ctx.getLogger().log(Constants.DEBUG_LEVEL, "Matched " + values[0] + ".");
+			String key = values[0].replaceAll("^\"|\"$", "");
+			String value = values[1].replaceAll("^\"|\"$", "");
+			if (test.equals(key)) {
+				addOutput(elevate, group, name, value);
+				ctx.getLogger().log(Constants.DEBUG_LEVEL, "Matched " + key + ".");
 				return true;
 			}
 		}
@@ -102,5 +104,4 @@ public class Switch {
 			ctx.getLogger().log(Constants.DEBUG_LEVEL, "Elevating to globsal ${export." + groupName + "}.");
 		}
 	}
-
 }

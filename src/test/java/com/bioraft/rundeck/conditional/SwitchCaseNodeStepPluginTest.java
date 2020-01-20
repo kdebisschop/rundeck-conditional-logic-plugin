@@ -102,7 +102,7 @@ public class SwitchCaseNodeStepPluginTest {
 		String group = "raft";
 		String name = "test";
 		StringBuffer caseString = new StringBuffer();
-		cases.forEach((k, v) -> caseString.append(k).append(":").append(v).append(";"));
+		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append(","));
 
 		Map<String, Object> configuration = new HashMap<>();
 		configuration.put("group", group);
@@ -126,7 +126,7 @@ public class SwitchCaseNodeStepPluginTest {
 
 		Map<String, String> cases = ImmutableMap.<String, String>builder().put("k1", "v1").put("k2", "v2").build();
 		StringBuilder caseString = new StringBuilder();
-		cases.forEach((k, v) -> caseString.append(k).append(":").append(v).append(";"));
+		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append(","));
 		configuration.put("cases", caseString.toString());
 
 		configuration.put("group", group);

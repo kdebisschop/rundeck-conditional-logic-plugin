@@ -23,8 +23,13 @@ import com.dtolabs.rundeck.core.plugins.Plugin;
 import com.dtolabs.rundeck.plugins.ServiceNameConstants;
 import com.dtolabs.rundeck.plugins.descriptions.PluginDescription;
 import com.dtolabs.rundeck.plugins.descriptions.PluginProperty;
+import com.dtolabs.rundeck.plugins.descriptions.RenderingOption;
+import com.dtolabs.rundeck.plugins.descriptions.RenderingOptions;
 import com.dtolabs.rundeck.plugins.step.PluginStepContext;
 import com.dtolabs.rundeck.plugins.step.StepPlugin;
+
+import static com.dtolabs.rundeck.core.plugins.configuration.StringRenderingConstants.CODE_SYNTAX_MODE;
+import static com.dtolabs.rundeck.core.plugins.configuration.StringRenderingConstants.DISPLAY_TYPE_KEY;
 
 /**
  * Workflow Node Step Plug-in to choose one of several values to uplift into a
@@ -44,7 +49,11 @@ public class SwitchCaseStepPlugin implements StepPlugin {
 	@PluginProperty(title = "Name", description = "Variable name (i.e., ${group.name}", required = true)
 	private String name;
 
-	@PluginProperty(title = "Cases", description = "Cases and results as colon-spliced pairs, seprated by semicolons", required = true)
+	@PluginProperty(title = "Cases", description = "Cases and results as colon-spliced pairs of quoted strings, separated by commas (i.e., members of a JSON object)", required = true)
+	@RenderingOptions({
+			@RenderingOption(key = DISPLAY_TYPE_KEY, value = "CODE"),
+			@RenderingOption(key = CODE_SYNTAX_MODE, value = "json"),
+	})
 	private String cases;
 
 	@PluginProperty(title = "Test Value", description = "Test value", required = true)
