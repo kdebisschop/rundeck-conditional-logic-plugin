@@ -18,6 +18,12 @@ package com.bioraft.rundeck.conditional;
 import com.dtolabs.rundeck.core.Constants;
 import com.dtolabs.rundeck.core.dispatcher.ContextView;
 import com.dtolabs.rundeck.plugins.step.PluginStepContext;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Workflow Node Step Plug-in to choose one of several values to uplift into a
@@ -75,15 +81,22 @@ public class Switch {
 	 * @return True if matched, false otherwise.
 	 */
 	public boolean switchCase(String group, String name, String cases, String test, boolean elevate) {
-		for (String keyValue : cases.split(",")) {
-			String[] values = keyValue.split(":");
-			String key = values[0].replaceAll("^\"|\"$", "");
-			String value = values[1].replaceAll("^\"|\"$", "");
-			if (test.equals(key)) {
-				addOutput(elevate, group, name, value);
-				ctx.getLogger().log(Constants.DEBUG_LEVEL, "Matched " + key + ".");
-				return true;
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			JsonNode map = objectMapper.readTree(ensureStringIsJsonObject(cases));
+			Iterator<Map.Entry<String, JsonNode>> iterator = map.fields();
+			while (iterator.hasNext()) {
+				Map.Entry<String, JsonNode> entry = iterator.next();
+				String key = entry.getKey();
+				String value = entry.getValue().asText();
+				if (test.equals(key)) {
+					addOutput(elevate, group, name, value);
+					ctx.getLogger().log(Constants.DEBUG_LEVEL, "Matched " + key + ".");
+					return true;
+				}
 			}
+		} catch (JsonProcessingException e) {
+			return false;
 		}
 		return false;
 	}
@@ -103,5 +116,13 @@ public class Switch {
 			ctx.getOutputContext().addOutput(ContextView.global(), "export", groupName, value);
 			ctx.getLogger().log(Constants.DEBUG_LEVEL, "Elevating to globsal ${export." + groupName + "}.");
 		}
+	}
+
+	public static String ensureStringIsJsonObject(String string) {
+		if (string == null) {
+			return "";
+		}
+		String trimmed = string.replaceFirst("^\\s*\\{?", "{").replaceFirst("\\s*$", "");
+		return trimmed + (trimmed.endsWith("}") ? "" : "}");
 	}
 }

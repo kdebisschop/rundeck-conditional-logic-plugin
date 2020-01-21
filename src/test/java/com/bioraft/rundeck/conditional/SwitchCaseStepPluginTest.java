@@ -99,6 +99,7 @@ public class SwitchCaseStepPluginTest {
 		String name = "test";
 		StringBuffer caseString = new StringBuffer();
 		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append(","));
+		caseString.setLength(caseString.length() - 1);
 
 		Map<String, Object> configuration = new HashMap<>();
 		configuration.put("group", group);
@@ -122,6 +123,7 @@ public class SwitchCaseStepPluginTest {
 		Map<String, String> cases = ImmutableMap.<String, String>builder().put("k1", "v1").put("k2", "v2").build();
 		StringBuilder caseString = new StringBuilder();
 		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append(","));
+		caseString.setLength(caseString.length() - 1);
 		configuration.put("cases", caseString.toString());
 
 		configuration.put("group", group);

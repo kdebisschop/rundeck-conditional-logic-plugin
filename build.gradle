@@ -18,7 +18,7 @@ ext.pluginName = 'RunDeck Conditional Logic Plugin'
 ext.pluginDescription = 'Execute conditional logic in RunDeck workflows'
 
 scmVersion {
-    ignoreUncommittedChanges = true
+    ignoreUncommittedChanges = false
     tag {
         // Ignore tags that begin with <prefix><versionSeparator>, include all tags
         // if prefix is empty.
