@@ -28,6 +28,7 @@ import com.dtolabs.rundeck.plugins.descriptions.RenderingOption;
 import com.dtolabs.rundeck.plugins.descriptions.RenderingOptions;
 import com.dtolabs.rundeck.plugins.step.NodeStepPlugin;
 import com.dtolabs.rundeck.plugins.step.PluginStepContext;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import static com.dtolabs.rundeck.core.plugins.configuration.StringRenderingConstants.CODE_SYNTAX_MODE;
 import static com.dtolabs.rundeck.core.plugins.configuration.StringRenderingConstants.DISPLAY_TYPE_KEY;
@@ -61,21 +62,23 @@ public class SwitchCaseNodeStepPlugin implements NodeStepPlugin {
 	@PluginProperty(title = "Test Value", description = "Test value", required = true)
 	private String testValue;
 
-	@PluginProperty(title = "Default", description = "Default value", required = false)
+	@PluginProperty(title = "Default", description = "Default value")
 	private String defaultValue;
 
-	@PluginProperty(title = "Make global?", description = "Elevate this variable to global scope (default: false)", required = false)
+	@PluginProperty(title = "Make global?", description = "Elevate this variable to global scope (default: false)")
 	private boolean elevateToGlobal;
 
 	@Override
 	public void executeNodeStep(PluginStepContext ctx, Map<String, Object> cfg, INodeEntry node)
 			throws NodeStepException {
 
-		String group = cfg.getOrDefault("group", this.group).toString();
-		String name = cfg.getOrDefault("name", this.name).toString();
-		String cases = cfg.getOrDefault("cases", this.cases).toString();
-		String testValue = cfg.getOrDefault("testValue", this.testValue).toString();
-		boolean elevateToGlobal = cfg.getOrDefault("elevateToGlobal", this.elevateToGlobal).equals("true");
+		group = cfg.getOrDefault("group", this.group).toString();
+		name = cfg.getOrDefault("name", this.name).toString();
+		cases = cfg.getOrDefault("cases", this.cases).toString();
+		testValue = cfg.getOrDefault("testValue", this.testValue).toString();
+		if (cfg.containsKey("elevateToGlobal")) {
+			elevateToGlobal = cfg.get("elevateToGlobal").equals("true");
+		}
 
 		boolean globalHasDefault = defaultValue != null && defaultValue.length() > 0;
 		boolean cfgHasDefault = cfg.containsKey("defaultValue") && cfg.get("defaultValue") != null;
@@ -86,10 +89,14 @@ public class SwitchCaseNodeStepPlugin implements NodeStepPlugin {
 		ctx.getLogger().log(Constants.DEBUG_LEVEL,
 				"Setting " + group + "." + name + " based on " + testValue + " " + cases);
 
-		if (cfgHasDefault || globalHasDefault) {
-			(new Switch(ctx)).switchCase(group, name, cases, testValue, defaultValue, elevateToGlobal);
-		} else {
-			(new Switch(ctx)).switchCase(group, name, cases, testValue, elevateToGlobal);
+		try {
+			if (cfgHasDefault || globalHasDefault) {
+				(new Switch(ctx)).switchCase(group, name, cases, testValue, defaultValue, elevateToGlobal);
+			} else {
+				(new Switch(ctx)).switchCase(group, name, cases, testValue, elevateToGlobal);
+			}
+		} catch (JsonProcessingException e) {
+			throw new NodeStepException(e.getMessage(), Switch.Causes.InvalidJSON, node.getNodename());
 		}
 	}
 

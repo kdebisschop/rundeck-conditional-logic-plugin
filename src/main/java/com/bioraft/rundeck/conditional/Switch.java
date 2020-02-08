@@ -17,6 +17,7 @@ package com.bioraft.rundeck.conditional;
 
 import com.dtolabs.rundeck.core.Constants;
 import com.dtolabs.rundeck.core.dispatcher.ContextView;
+import com.dtolabs.rundeck.core.execution.workflow.steps.FailureReason;
 import com.dtolabs.rundeck.plugins.step.PluginStepContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -57,15 +58,22 @@ public class Switch {
 	 * @param elevate      If specified, also create a variable in global export
 	 *                     context.
 	 */
-	public void switchCase(String group, String name, String cases, String test, String defaultValue, boolean elevate) {
+	public void switchCase(String group, String name, String cases, String test, String defaultValue, boolean elevate) throws JsonProcessingException {
 		// If no case was matched, assign defaultValue if it is not null.
-		if (!switchCase(group, name, cases, test, elevate)) {
-			if (defaultValue != null && defaultValue.length() > 0) {
-				addOutput(elevate, group, name, defaultValue);
-				ctx.getLogger().log(Constants.DEBUG_LEVEL, "No match, using default.");
-			} else {
-				ctx.getLogger().log(Constants.DEBUG_LEVEL, "No match, default is empty.");
+		try {
+			if (!switchCase(group, name, cases, test, elevate)) {
+				if (defaultValue != null && defaultValue.length() > 0) {
+					addOutput(elevate, group, name, defaultValue);
+					ctx.getLogger().log(Constants.DEBUG_LEVEL, "No match, using default.");
+				} else {
+					ctx.getLogger().log(Constants.DEBUG_LEVEL, "No match, default is empty.");
+				}
 			}
+		} catch (JsonProcessingException e) {
+			ctx.getLogger().log(Constants.ERR_LEVEL, "Failed to parse cases.");
+			ctx.getLogger().log(Constants.ERR_LEVEL, e.getMessage());
+			e.printStackTrace();
+			throw e;
 		}
 	}
 
@@ -80,23 +88,19 @@ public class Switch {
 	 * 
 	 * @return True if matched, false otherwise.
 	 */
-	public boolean switchCase(String group, String name, String cases, String test, boolean elevate) {
+	public boolean switchCase(String group, String name, String cases, String test, boolean elevate) throws JsonProcessingException {
 		ObjectMapper objectMapper = new ObjectMapper();
-		try {
-			JsonNode map = objectMapper.readTree(ensureStringIsJsonObject(cases));
-			Iterator<Map.Entry<String, JsonNode>> iterator = map.fields();
-			while (iterator.hasNext()) {
-				Map.Entry<String, JsonNode> entry = iterator.next();
-				String key = entry.getKey();
-				String value = entry.getValue().asText();
-				if (test.equals(key)) {
-					addOutput(elevate, group, name, value);
-					ctx.getLogger().log(Constants.DEBUG_LEVEL, "Matched " + key + ".");
-					return true;
-				}
+		JsonNode map = objectMapper.readTree(ensureStringIsJsonObject(cases));
+		Iterator<Map.Entry<String, JsonNode>> iterator = map.fields();
+		while (iterator.hasNext()) {
+			Map.Entry<String, JsonNode> entry = iterator.next();
+			String key = entry.getKey();
+			String value = entry.getValue().asText();
+			if (test.equals(key)) {
+				addOutput(elevate, group, name, value);
+				ctx.getLogger().log(Constants.DEBUG_LEVEL, "Matched " + key + ".");
+				return true;
 			}
-		} catch (JsonProcessingException e) {
-			return false;
 		}
 		return false;
 	}
@@ -124,5 +128,9 @@ public class Switch {
 		}
 		String trimmed = string.replaceFirst("^\\s*\\{?", "{").replaceFirst("\\s*$", "");
 		return trimmed + (trimmed.endsWith("}") ? "" : "}");
+	}
+
+	enum Causes implements FailureReason {
+		InvalidJSON
 	}
 }
