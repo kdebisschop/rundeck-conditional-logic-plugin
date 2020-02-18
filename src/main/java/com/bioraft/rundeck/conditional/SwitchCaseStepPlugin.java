@@ -94,7 +94,7 @@ public class SwitchCaseStepPlugin implements StepPlugin {
 			}
 		} catch (
 				JsonProcessingException e) {
-			throw new StepException(e.getMessage(), Switch.Causes.InvalidJSON);
+			throw new StepException(e.getMessage(), Switch.Causes.INVALID_JSON);
 		}
 	}
 

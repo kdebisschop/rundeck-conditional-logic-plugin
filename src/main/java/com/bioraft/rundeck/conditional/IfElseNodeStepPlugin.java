@@ -62,22 +62,22 @@ public class IfElseNodeStepPlugin implements NodeStepPlugin {
 	@PluginProperty(title = "If True", description = "Value to assign if comparison is true", required = true)
 	private String ifTrue;
 
-	@PluginProperty(title = "If False", description = "Value to assign if comparison is false", required = false)
+	@PluginProperty(title = "If False", description = "Value to assign if comparison is false")
 	private String ifFalse;
 
-	@PluginProperty(title = "Make global?", description = "Elevate this variable to global scope (default: false)", required = false)
+	@PluginProperty(title = "Make global?", description = "Elevate this variable to global scope (default: false)")
 	private boolean elevateToGlobal;
 
 	@Override
 	public void executeNodeStep(PluginStepContext ctx, Map<String, Object> cfg, INodeEntry node)
 			throws NodeStepException {
 
-		String group = cfg.getOrDefault("group", this.group).toString();
-		String name = cfg.getOrDefault("name", this.name).toString();
-		String testValue = cfg.getOrDefault("testValue", this.testValue).toString();
-		String operator = cfg.getOrDefault("operator", this.operator).toString();
-		String comparisonValue = cfg.getOrDefault("comparisonValue", this.comparisonValue).toString();
-		String ifTrue = cfg.getOrDefault("ifTrue", this.ifTrue).toString();
+		group = cfg.getOrDefault("group", this.group).toString();
+		name = cfg.getOrDefault("name", this.name).toString();
+		testValue = cfg.getOrDefault("testValue", this.testValue).toString();
+		operator = cfg.getOrDefault("operator", this.operator).toString();
+		comparisonValue = cfg.getOrDefault("comparisonValue", this.comparisonValue).toString();
+		ifTrue = cfg.getOrDefault("ifTrue", this.ifTrue).toString();
 		boolean elevateToGlobal = (boolean) cfg.getOrDefault("elevateToGlobal", this.elevateToGlobal);
 		if (cfg.containsKey("ifFalse") && cfg.get("ifFalse") != null) {
 			ifFalse = cfg.getOrDefault("ifFalse", this.ifFalse).toString();

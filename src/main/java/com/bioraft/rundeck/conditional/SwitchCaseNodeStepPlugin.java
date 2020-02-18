@@ -96,7 +96,7 @@ public class SwitchCaseNodeStepPlugin implements NodeStepPlugin {
 				(new Switch(ctx)).switchCase(group, name, cases, testValue, elevateToGlobal);
 			}
 		} catch (JsonProcessingException e) {
-			throw new NodeStepException(e.getMessage(), Switch.Causes.InvalidJSON, node.getNodename());
+			throw new NodeStepException(e.getMessage(), Switch.Causes.INVALID_JSON, node.getNodename());
 		}
 	}
 

@@ -126,11 +126,11 @@ public class Switch {
 		if (string == null) {
 			return "";
 		}
-		String trimmed = string.replaceFirst("^\\s*\\{?", "{").replaceFirst("\\s*$", "");
-		return trimmed + (trimmed.endsWith("}") ? "" : "}");
+		String trimmed = string.trim().replaceFirst(",$", "");
+		return (trimmed.startsWith("{") ? "" : "{") + trimmed + (trimmed.endsWith("}") ? "" : "}");
 	}
 
 	enum Causes implements FailureReason {
-		InvalidJSON
+		INVALID_JSON
 	}
 }
