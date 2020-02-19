@@ -19,6 +19,8 @@ import com.dtolabs.rundeck.core.Constants;
 import com.dtolabs.rundeck.core.dispatcher.ContextView;
 import com.dtolabs.rundeck.plugins.step.PluginStepContext;
 
+import java.util.Map;
+
 /**
  * Workflow Node Step Plug-in to choose one of several values to uplift into a
  * step variable.
@@ -45,6 +47,8 @@ public class IfElse {
 
 	private PluginStepContext ctx;
 
+	private Map<String, Object> cfg;
+
 	/** If specified, also create a variable in global export context. */
 	private boolean elevate = false;
 
@@ -62,6 +66,11 @@ public class IfElse {
 		return this;
 	}
 
+	public IfElse setCfg(Map<String, Object> cfg) {
+		this.cfg = cfg;
+		return this;
+	}
+
 	/**
 	 * Add ifTrue value to SharedOutputContext if condition passes, otherwise add
 	 * ifFalse if not null.
@@ -76,6 +85,14 @@ public class IfElse {
 	 */
 	public void ifElse(String group, String name, String testValue, String operator, String comparisonValue,
 			String ifTrue, String ifFalse) {
+
+		group = cfg.getOrDefault("group", group).toString();
+		name = cfg.getOrDefault("name", name).toString();
+		testValue = cfg.getOrDefault("testValue", testValue).toString();
+		operator = cfg.getOrDefault("operator", operator).toString();
+		comparisonValue = cfg.getOrDefault("comparisonValue", comparisonValue).toString();
+		ifTrue = cfg.getOrDefault("ifTrue", ifTrue).toString();
+		ifFalse = cfg.getOrDefault("ifFalse", ifFalse).toString();
 
 		String value;
 		String matched;

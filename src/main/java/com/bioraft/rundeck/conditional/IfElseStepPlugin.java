@@ -54,7 +54,7 @@ public class IfElseStepPlugin implements StepPlugin {
 			IfElse.STRING_LE, IfElse.STRING_GE, IfElse.STRING_GT,
 			IfElse.STRING_BEG, IfElse.STRING_END, IfElse.NUMBER_EQ,
 			IfElse.NUMBER_NE, IfElse.NUMBER_LT, IfElse.NUMBER_LE,
-			IfElse.NUMBER_GE, IfElse.NUMBER_GT }, freeSelect = false)
+			IfElse.NUMBER_GE, IfElse.NUMBER_GT })
 	private String operator;
 
 	@PluginProperty(title = "Comparison Value", description = "Second test value", required = true)
@@ -72,19 +72,12 @@ public class IfElseStepPlugin implements StepPlugin {
 	@Override
 	public void executeStep(final PluginStepContext ctx, final Map<String, Object> cfg) throws StepException {
 
-		group = cfg.getOrDefault("group", this.group).toString();
-		name = cfg.getOrDefault("name", this.name).toString();
-		testValue = cfg.getOrDefault("testValue", this.testValue).toString();
-		operator = cfg.getOrDefault("operator", this.operator).toString();
-		comparisonValue = cfg.getOrDefault("comparisonValue", this.comparisonValue).toString();
-		ifTrue = cfg.getOrDefault("ifTrue", this.ifTrue).toString();
 		elevateToGlobal = (boolean) cfg.getOrDefault("elevateToGlobal", this.elevateToGlobal);
-		ifFalse = cfg.getOrDefault("ifFalse", this.ifFalse).toString();
 
 		String message = "Setting " + group + "." + name + " based on " + testValue + " " + operator + " " + comparisonValue;
 		ctx.getLogger().log(Constants.DEBUG_LEVEL, message);
 
-		(new IfElse(ctx)).setElevate(elevateToGlobal)
+		(new IfElse(ctx)).setElevate(elevateToGlobal).setCfg(cfg)
 				.ifElse(group, name, testValue, operator, comparisonValue, ifTrue, ifFalse);
 	}
 
