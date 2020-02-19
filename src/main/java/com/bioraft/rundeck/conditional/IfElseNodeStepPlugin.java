@@ -79,9 +79,7 @@ public class IfElseNodeStepPlugin implements NodeStepPlugin {
 		comparisonValue = cfg.getOrDefault("comparisonValue", this.comparisonValue).toString();
 		ifTrue = cfg.getOrDefault("ifTrue", this.ifTrue).toString();
 		boolean elevateToGlobal = (boolean) cfg.getOrDefault("elevateToGlobal", this.elevateToGlobal);
-		if (cfg.containsKey("ifFalse") && cfg.get("ifFalse") != null) {
-			ifFalse = cfg.getOrDefault("ifFalse", this.ifFalse).toString();
-		}
+		ifFalse = cfg.getOrDefault("ifFalse", this.ifFalse).toString();
 
 		ctx.getLogger().log(Constants.DEBUG_LEVEL,
 				"Setting " + group + "." + name + " based on " + testValue + " " + operator + " " + comparisonValue);

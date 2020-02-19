@@ -101,12 +101,36 @@ public class SwitchCaseNodeStepPluginTest {
 		this.runTestNoDefault(configuration);
 	}
 
+	@Test
+	public void testStrippingTrailingComma() throws NodeStepException {
+		StringBuffer caseString = new StringBuffer();
+		Map<String, String> cases = ImmutableMap.<String, String>builder().put("k1", "v1").put("k2", "v2").build();
+		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append(","));
+		validInput(caseString.toString());
+	}
+
 	@Test(expected = NodeStepException.class)
 	public void testInvalidCases() throws NodeStepException {
 		StringBuffer caseString = new StringBuffer();
 		Map<String, String> cases = ImmutableMap.<String, String>builder().put("k1", "v1").put("k2", "v2").build();
-		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append(","));
+		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append("."));
 		invalidInput(caseString.toString());
+	}
+
+	private void validInput(String caseString)
+			throws NodeStepException {
+
+		Map<String, Object> configuration = new HashMap<>();
+		configuration.put("group", group);
+		configuration.put("name", name);
+		configuration.put("cases", caseString);
+		configuration.put("testValue", testValue);
+		configuration.put("defaultValue", defaultValue);
+
+		when(context.getOutputContext()).thenReturn(sharedOutputContext);
+		when(context.getLogger()).thenReturn(logger);
+
+		this.plugin.executeNodeStep(context, configuration, node);
 	}
 
 	private void invalidInput(String caseString)
@@ -166,7 +190,4 @@ public class SwitchCaseNodeStepPluginTest {
 		verify(context, never()).getOutputContext();
 		verify(sharedOutputContext, never()).addOutput(any(String.class), any(String.class), any(String.class));
 	}
-
-
-
 }

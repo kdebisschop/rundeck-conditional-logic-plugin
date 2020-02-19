@@ -72,48 +72,23 @@ public class IfElse {
 			String ifTrue, String ifFalse, boolean elevateToGlobal) {
 
 		String value;
-		String matched = null;
+		String matched;
 
-		if (operator.equals(STRING_EQ) && testValue.endsWith(comparisonValue)) {
-			matched = STRING_EQ;
-		} else if (operator.equals(STRING_NE) && !testValue.equals(comparisonValue)) {
-			matched = STRING_NE;
-		} else if (operator.equals(STRING_BEG) && testValue.startsWith(comparisonValue)) {
-			matched = STRING_BEG;
-		} else if (operator.equals(STRING_END) && testValue.endsWith(comparisonValue)) {
-			matched = STRING_END;
-		} else if (operator.equals(STRING_LT) && testValue.compareTo(comparisonValue) < 0) {
-			matched = STRING_LT;
-		} else if (operator.equals(STRING_LE) && testValue.compareTo(comparisonValue) <= 0) {
-			matched = STRING_LE;
-		} else if (operator.equals(STRING_GE) && testValue.compareTo(comparisonValue) >= 0) {
-			matched = STRING_GE;
-		} else if (operator.equals(STRING_GT) && testValue.compareTo(comparisonValue) > 0) {
-			matched = STRING_GT;
-		} else if (operator.equals(NUMBER_LT) && Double.parseDouble(testValue) < Double.parseDouble(comparisonValue)) {
-			matched = NUMBER_LT;
-		} else if (operator.equals(NUMBER_LE) && Double.parseDouble(testValue) <= Double.parseDouble(comparisonValue)) {
-			matched = NUMBER_LE;
-		} else if (operator.equals(NUMBER_GE) && Double.parseDouble(testValue) >= Double.parseDouble(comparisonValue)) {
-			matched = NUMBER_GE;
-		} else if (operator.equals(NUMBER_GT) && Double.parseDouble(testValue) > Double.parseDouble(comparisonValue)) {
-			matched = NUMBER_GT;
-		} else if (operator.equals(NUMBER_EQ) && Double.parseDouble(testValue) == Double.parseDouble(comparisonValue)) {
-			matched = NUMBER_EQ;
-		} else if (operator.equals(NUMBER_NE) && Double.parseDouble(testValue) != Double.parseDouble(comparisonValue)) {
-			matched = NUMBER_NE;
+		matched = compareString(operator, testValue, comparisonValue);
+		if (matched.equals("")) {
+			matched = compareNumeric(operator, testValue, comparisonValue);
 		}
 
-		if (matched != null) {
-			value = ifTrue;
-			ctx.getLogger().log(Constants.DEBUG_LEVEL, "Matched " + matched + ", returning ifTrue value.");
-		} else {
+		if (matched.equals("")) {
 			if (ifFalse == null || ifFalse.length() == 0) {
 				ctx.getLogger().log(Constants.DEBUG_LEVEL, "No match, default is empty.");
 				return;
 			}
 			ctx.getLogger().log(Constants.DEBUG_LEVEL, "No match, using default.");
 			value = ifFalse;
+		} else {
+			value = ifTrue;
+			ctx.getLogger().log(Constants.DEBUG_LEVEL, "Matched " + matched + ", returning ifTrue value.");
 		}
 
 		ctx.getOutputContext().addOutput(group, name, value);
@@ -124,4 +99,47 @@ public class IfElse {
 		}
 	}
 
+	private String compareString(String operator, String testValue, String comparisonValue) {
+		if (operator.equals(STRING_EQ) && testValue.equals(comparisonValue)) {
+			return STRING_EQ;
+		} else if (operator.equals(STRING_NE) && !testValue.equals(comparisonValue)) {
+			return STRING_NE;
+		} else if (operator.equals(STRING_BEG) && testValue.startsWith(comparisonValue)) {
+			return STRING_BEG;
+		} else if (operator.equals(STRING_END) && testValue.endsWith(comparisonValue)) {
+			return STRING_END;
+		} else if (operator.equals(STRING_LT) && testValue.compareTo(comparisonValue) < 0) {
+			return STRING_LT;
+		} else if (operator.equals(STRING_LE) && testValue.compareTo(comparisonValue) <= 0) {
+			return STRING_LE;
+		} else if (operator.equals(STRING_GE) && testValue.compareTo(comparisonValue) >= 0) {
+			return STRING_GE;
+		} else if (operator.equals(STRING_GT) && testValue.compareTo(comparisonValue) > 0) {
+			return STRING_GT;
+		}
+		return "";
+	}
+
+	private String compareNumeric(String operator, String testValue, String comparisonValue) {
+		try {
+			double testDouble = Double.parseDouble(testValue);
+			double comparisonDouble = Double.parseDouble(comparisonValue);
+			if (operator.equals(NUMBER_LT) && testDouble < comparisonDouble) {
+				return NUMBER_LT;
+			} else if (operator.equals(NUMBER_LE) && testDouble <= comparisonDouble) {
+				return NUMBER_LE;
+			} else if (operator.equals(NUMBER_GE) && testDouble >= comparisonDouble) {
+				return NUMBER_GE;
+			} else if (operator.equals(NUMBER_GT) && testDouble > comparisonDouble) {
+				return NUMBER_GT;
+			} else if (operator.equals(NUMBER_EQ) && testDouble == comparisonDouble) {
+				return NUMBER_EQ;
+			} else if (operator.equals(NUMBER_NE) && testDouble != comparisonDouble) {
+				return NUMBER_NE;
+			}
+		} catch (Exception e) {
+			return "";
+		}
+		return "";
+	}
 }
