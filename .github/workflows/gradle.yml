@@ -14,6 +14,9 @@ jobs:
       with:
         java-version: 1.8
     - name: Scan with Sonar
-      run: ./gradlew sonar
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     - name: Build with Gradle
       run: ./gradlew build
