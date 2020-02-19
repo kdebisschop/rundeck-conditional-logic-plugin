@@ -35,6 +35,8 @@ import java.util.Map;
  */
 public class Switch {
 
+	public static final String CFG_DEFAULT_VALUE = "defaultValue";
+
 	private PluginStepContext ctx;
 
 	/**
