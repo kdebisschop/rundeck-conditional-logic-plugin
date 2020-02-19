@@ -11,8 +11,6 @@ sonarqube {
         property "sonar.organization", "kdebisschop"
         property "sonar.host.url", "https://sonarcloud.io"
         property "sonar.login", "807fd8589d7244bd324b5fecdfca9614d8a40c8c"
-        property "sonar.junit.reportPaths", "build/reports/tests/test"
-        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test"
     }
 }
 
