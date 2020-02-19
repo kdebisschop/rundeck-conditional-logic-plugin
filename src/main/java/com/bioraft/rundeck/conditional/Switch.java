@@ -127,7 +127,7 @@ public class Switch {
 		if (string == null) {
 			return "";
 		}
-		String trimmed = string.trim().replaceFirst(",$", "");
+		String trimmed = string.trim().replaceFirst(",[\\s}]*$", "");
 		return (trimmed.startsWith("{") ? "" : "{") + trimmed + (trimmed.endsWith("}") ? "" : "}");
 	}
 

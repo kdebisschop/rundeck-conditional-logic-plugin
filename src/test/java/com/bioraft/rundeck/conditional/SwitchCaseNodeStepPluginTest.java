@@ -81,6 +81,8 @@ public class SwitchCaseNodeStepPluginTest {
 		assertEquals(expected, Switch.ensureStringIsJsonObject(given + "}"));
 		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given));
 		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given + "}"));
+		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given + ",}"));
+		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given + ", } "));
 	}
 
 	@Test
