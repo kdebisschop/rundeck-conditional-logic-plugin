@@ -78,7 +78,7 @@ public class IfElseStepPlugin implements StepPlugin {
 		operator = cfg.getOrDefault("operator", this.operator).toString();
 		comparisonValue = cfg.getOrDefault("comparisonValue", this.comparisonValue).toString();
 		ifTrue = cfg.getOrDefault("ifTrue", this.ifTrue).toString();
-		boolean elevateToGlobal = (boolean) cfg.getOrDefault("elevateToGlobal", this.elevateToGlobal);
+		elevateToGlobal = (boolean) cfg.getOrDefault("elevateToGlobal", this.elevateToGlobal);
 		ifFalse = cfg.getOrDefault("ifFalse", this.ifFalse).toString();
 
 		String message = "Setting " + group + "." + name + " based on " + testValue + " " + operator + " " + comparisonValue;
