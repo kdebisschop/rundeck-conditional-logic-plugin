@@ -131,6 +131,8 @@ public class SwitchCaseNodeStepPluginTest {
 		when(context.getLogger()).thenReturn(logger);
 
 		this.plugin.executeNodeStep(context, configuration, node);
+		verify(context, times(1)).getOutputContext();
+		verify(sharedOutputContext, times(1)).addOutput(eq(group), eq(name), eq(defaultValue));
 	}
 
 	private void invalidInput(String caseString)

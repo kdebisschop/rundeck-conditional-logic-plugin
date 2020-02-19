@@ -86,8 +86,8 @@ public class SwitchCaseNodeStepPlugin implements NodeStepPlugin {
 			this.defaultValue = cfg.get("defaultValue").toString();
 		}
 
-		ctx.getLogger().log(Constants.DEBUG_LEVEL,
-				"Setting " + group + "." + name + " based on " + testValue + " " + cases);
+		String message = "Setting " + group + "." + name + " based on " + testValue + " " + cases;
+		ctx.getLogger().log(Constants.DEBUG_LEVEL, message);
 
 		try {
 			if (cfgHasDefault || globalHasDefault) {
