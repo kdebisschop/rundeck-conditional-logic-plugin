@@ -72,7 +72,6 @@ public class Switch {
 		} catch (JsonProcessingException e) {
 			ctx.getLogger().log(Constants.ERR_LEVEL, "Failed to parse cases.");
 			ctx.getLogger().log(Constants.ERR_LEVEL, e.getMessage());
-			e.printStackTrace();
 			throw e;
 		}
 	}
