@@ -45,6 +45,9 @@ public class IfElse {
 
 	private PluginStepContext ctx;
 
+	/** If specified, also create a variable in global export context. */
+	private boolean elevate = false;
+
 	/**
 	 * Constructor sets PluginStepContext.
 	 *
@@ -52,6 +55,11 @@ public class IfElse {
 	 */
 	public IfElse(PluginStepContext ctx) {
 		this.ctx = ctx;
+	}
+
+	public IfElse setElevate(boolean elevate) {
+		this.elevate = elevate;
+		return this;
 	}
 
 	/**
@@ -65,11 +73,9 @@ public class IfElse {
 	 * @param comparisonValue The value to test against.
 	 * @param ifTrue          The value to return if comparison is true.
 	 * @param ifFalse         The value to return if comparison is false.
-	 * @param elevateToGlobal If specified, also create a variable in global export
-	 *                        context.
 	 */
 	public void ifElse(String group, String name, String testValue, String operator, String comparisonValue,
-			String ifTrue, String ifFalse, boolean elevateToGlobal) {
+			String ifTrue, String ifFalse) {
 
 		String value;
 		String matched;
@@ -99,7 +105,7 @@ public class IfElse {
 		}
 
 		ctx.getOutputContext().addOutput(group, name, value);
-		if (elevateToGlobal) {
+		if (elevate) {
 			String groupName = group + "." + name;
 			ctx.getOutputContext().addOutput(ContextView.global(), "export", groupName, value);
 			ctx.getLogger().log(Constants.DEBUG_LEVEL, "Elevating to globsal ${export." + groupName + "}.");

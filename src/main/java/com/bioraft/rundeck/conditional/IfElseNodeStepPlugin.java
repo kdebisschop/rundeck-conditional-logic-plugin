@@ -81,10 +81,11 @@ public class IfElseNodeStepPlugin implements NodeStepPlugin {
 		boolean elevateToGlobal = (boolean) cfg.getOrDefault("elevateToGlobal", this.elevateToGlobal);
 		ifFalse = cfg.getOrDefault("ifFalse", this.ifFalse).toString();
 
-		ctx.getLogger().log(Constants.DEBUG_LEVEL,
-				"Setting " + group + "." + name + " based on " + testValue + " " + operator + " " + comparisonValue);
+		String message = "Setting " + group + "." + name + " based on " + testValue + " " + operator + " " + comparisonValue;
+		ctx.getLogger().log(Constants.DEBUG_LEVEL, message);
 
-		(new IfElse(ctx)).ifElse(group, name, testValue, operator, comparisonValue, ifTrue, ifFalse, elevateToGlobal);
+		(new IfElse(ctx)).setElevate(elevateToGlobal)
+				.ifElse(group, name, testValue, operator, comparisonValue, ifTrue, ifFalse);
 	}
 
 }

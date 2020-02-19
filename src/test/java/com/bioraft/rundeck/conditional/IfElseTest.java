@@ -103,7 +103,7 @@ public class IfElseTest {
 		when(context.getOutputContext()).thenReturn(sharedOutputContext);
 		when(context.getLogger()).thenReturn(logger);
 
-		this.plugin.ifElse(group, name, testValue, operator, comparison, ifTrue, ifFalse, false);
+		this.plugin.setElevate(false).ifElse(group, name, testValue, operator, comparison, ifTrue, ifFalse);
 		verify(context, atLeast(calls)).getOutputContext();
 		verify(sharedOutputContext, atLeast(calls)).addOutput(eq(group), eq(name), eq(ifTrue));
 	}
@@ -118,7 +118,7 @@ public class IfElseTest {
 		when(context.getOutputContext()).thenReturn(sharedOutputContext);
 		when(context.getLogger()).thenReturn(logger);
 
-		this.plugin.ifElse(group, name, testValue, operator, comparison, ifTrue, ifFalse, false);
+		this.plugin.setElevate(false).ifElse(group, name, testValue, operator, comparison, ifTrue, ifFalse);
 		verify(context, atLeast(calls)).getOutputContext();
 		verify(sharedOutputContext, atLeast(calls)).addOutput(eq(group), eq(name), eq(ifFalse));
 	}
