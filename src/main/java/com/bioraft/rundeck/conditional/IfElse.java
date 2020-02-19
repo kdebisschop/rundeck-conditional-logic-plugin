@@ -74,7 +74,14 @@ public class IfElse {
 		String value;
 		String matched;
 
-		matched = compareString(operator, testValue, comparisonValue);
+		if (operator.equals(STRING_EQ) && testValue.equals(comparisonValue)) {
+			matched =  STRING_EQ;
+		} else if (operator.equals(STRING_NE) && !testValue.equals(comparisonValue)) {
+			matched =  STRING_NE;
+		} else {
+			matched = compareString(operator, testValue, comparisonValue);
+		}
+
 		if (matched.equals("")) {
 			matched = compareNumeric(operator, testValue, comparisonValue);
 		}
@@ -100,21 +107,20 @@ public class IfElse {
 	}
 
 	private String compareString(String operator, String testValue, String comparisonValue) {
-		if (operator.equals(STRING_EQ) && testValue.equals(comparisonValue)) {
-			return STRING_EQ;
-		} else if (operator.equals(STRING_NE) && !testValue.equals(comparisonValue)) {
-			return STRING_NE;
-		} else if (operator.equals(STRING_BEG) && testValue.startsWith(comparisonValue)) {
+		if (operator.equals(STRING_BEG) && testValue.startsWith(comparisonValue)) {
 			return STRING_BEG;
 		} else if (operator.equals(STRING_END) && testValue.endsWith(comparisonValue)) {
 			return STRING_END;
-		} else if (operator.equals(STRING_LT) && testValue.compareTo(comparisonValue) < 0) {
+		}
+
+		int compare = testValue.compareTo(comparisonValue);
+		if (operator.equals(STRING_LT) && compare < 0) {
 			return STRING_LT;
-		} else if (operator.equals(STRING_LE) && testValue.compareTo(comparisonValue) <= 0) {
+		} else if (operator.equals(STRING_LE) && compare <= 0) {
 			return STRING_LE;
-		} else if (operator.equals(STRING_GE) && testValue.compareTo(comparisonValue) >= 0) {
+		} else if (operator.equals(STRING_GE) && compare >= 0) {
 			return STRING_GE;
-		} else if (operator.equals(STRING_GT) && testValue.compareTo(comparisonValue) > 0) {
+		} else if (operator.equals(STRING_GT) && compare > 0) {
 			return STRING_GT;
 		}
 		return "";
