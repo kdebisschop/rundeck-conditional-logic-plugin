@@ -15,6 +15,7 @@
  */
 package com.bioraft.rundeck.conditional;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
@@ -68,6 +69,18 @@ public class SwitchCaseNodeStepPluginTest {
 	@Before
 	public void setUp() {
 		this.plugin = new SwitchCaseNodeStepPlugin();
+	}
+
+	@Test
+	public void testEnsureStringIsJsonObject() {
+		assertEquals("", Switch.ensureStringIsJsonObject(null));
+		String given = "\"a\": \"1\"";
+		String expected = "{" + given + "}";
+		assertEquals(expected, Switch.ensureStringIsJsonObject(given));
+		assertEquals(expected, Switch.ensureStringIsJsonObject(given + ","));
+		assertEquals(expected, Switch.ensureStringIsJsonObject(given + "}"));
+		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given));
+		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given + "}"));
 	}
 
 	@Test
