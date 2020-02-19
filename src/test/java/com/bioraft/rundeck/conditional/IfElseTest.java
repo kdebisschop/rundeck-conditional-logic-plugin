@@ -51,9 +51,12 @@ public class IfElseTest {
 	@Mock
 	SharedOutputContext sharedOutputContext;
 
+	Map<String, Object> configuration;
+
 	@Before
 	public void setUp() {
 		this.plugin = new IfElse(context);
+		configuration = new HashMap<>();
 	}
 
 	@Test
@@ -103,7 +106,7 @@ public class IfElseTest {
 		when(context.getOutputContext()).thenReturn(sharedOutputContext);
 		when(context.getLogger()).thenReturn(logger);
 
-		this.plugin.setElevate(false).ifElse(group, name, testValue, operator, comparison, ifTrue, ifFalse);
+		this.plugin.setElevate(false).setCfg(configuration).ifElse(group, name, testValue, operator, comparison, ifTrue, ifFalse);
 		verify(context, atLeast(calls)).getOutputContext();
 		verify(sharedOutputContext, atLeast(calls)).addOutput(eq(group), eq(name), eq(ifTrue));
 	}
@@ -118,7 +121,7 @@ public class IfElseTest {
 		when(context.getOutputContext()).thenReturn(sharedOutputContext);
 		when(context.getLogger()).thenReturn(logger);
 
-		this.plugin.setElevate(false).ifElse(group, name, testValue, operator, comparison, ifTrue, ifFalse);
+		this.plugin.setElevate(false).setCfg(configuration).ifElse(group, name, testValue, operator, comparison, ifTrue, ifFalse);
 		verify(context, atLeast(calls)).getOutputContext();
 		verify(sharedOutputContext, atLeast(calls)).addOutput(eq(group), eq(name), eq(ifFalse));
 	}
