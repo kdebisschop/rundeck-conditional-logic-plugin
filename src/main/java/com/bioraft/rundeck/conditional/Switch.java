@@ -35,6 +35,8 @@ import java.util.Map;
  */
 public class Switch {
 
+	public static final String CFG_DEFAULT_VALUE = "defaultValue";
+
 	private PluginStepContext ctx;
 
 	/**
@@ -72,7 +74,6 @@ public class Switch {
 		} catch (JsonProcessingException e) {
 			ctx.getLogger().log(Constants.ERR_LEVEL, "Failed to parse cases.");
 			ctx.getLogger().log(Constants.ERR_LEVEL, e.getMessage());
-			e.printStackTrace();
 			throw e;
 		}
 	}
@@ -126,11 +127,11 @@ public class Switch {
 		if (string == null) {
 			return "";
 		}
-		String trimmed = string.replaceFirst("^\\s*\\{?", "{").replaceFirst("\\s*$", "");
-		return trimmed + (trimmed.endsWith("}") ? "" : "}");
+		String trimmed = string.trim().replaceFirst(",[\\s}]*$", "");
+		return (trimmed.startsWith("{") ? "" : "{") + trimmed + (trimmed.endsWith("}") ? "" : "}");
 	}
 
 	enum Causes implements FailureReason {
-		InvalidJSON
+		INVALID_JSON
 	}
 }

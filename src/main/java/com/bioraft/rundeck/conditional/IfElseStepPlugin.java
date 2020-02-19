@@ -54,7 +54,7 @@ public class IfElseStepPlugin implements StepPlugin {
 			IfElse.STRING_LE, IfElse.STRING_GE, IfElse.STRING_GT,
 			IfElse.STRING_BEG, IfElse.STRING_END, IfElse.NUMBER_EQ,
 			IfElse.NUMBER_NE, IfElse.NUMBER_LT, IfElse.NUMBER_LE,
-			IfElse.NUMBER_GE, IfElse.NUMBER_GT }, freeSelect = false)
+			IfElse.NUMBER_GE, IfElse.NUMBER_GT })
 	private String operator;
 
 	@PluginProperty(title = "Comparison Value", description = "Second test value", required = true)
@@ -63,30 +63,22 @@ public class IfElseStepPlugin implements StepPlugin {
 	@PluginProperty(title = "If True", description = "Value to assign if comparison is true", required = true)
 	private String ifTrue;
 
-	@PluginProperty(title = "If False", description = "Value to assign if comparison is false", required = false)
+	@PluginProperty(title = "If False", description = "Value to assign if comparison is false")
 	private String ifFalse;
 
-	@PluginProperty(title = "Make global?", description = "Elevate this variable to global scope (default: false)", required = false)
+	@PluginProperty(title = "Make global?", description = "Elevate this variable to global scope (default: false)")
 	private boolean elevateToGlobal;
 
 	@Override
 	public void executeStep(final PluginStepContext ctx, final Map<String, Object> cfg) throws StepException {
 
-		String group = cfg.getOrDefault("group", this.group).toString();
-		String name = cfg.getOrDefault("name", this.name).toString();
-		String testValue = cfg.getOrDefault("testValue", this.testValue).toString();
-		String operator = cfg.getOrDefault("operator", this.operator).toString();
-		String comparisonValue = cfg.getOrDefault("comparisonValue", this.comparisonValue).toString();
-		String ifTrue = cfg.getOrDefault("ifTrue", this.ifTrue).toString();
-		boolean elevateToGlobal = (boolean) cfg.getOrDefault("elevateToGlobal", this.elevateToGlobal);
-		if (cfg.containsKey("ifFalse") && cfg.get("ifFalse") != null) {
-			ifFalse = cfg.getOrDefault("ifFalse", this.ifFalse).toString();
-		}
+		elevateToGlobal = (boolean) cfg.getOrDefault("elevateToGlobal", this.elevateToGlobal);
 
-		ctx.getLogger().log(Constants.DEBUG_LEVEL,
-				"Setting " + group + "." + name + " based on " + testValue + " " + operator + " " + comparisonValue);
+		String message = "Setting " + group + "." + name + " based on " + testValue + " " + operator + " " + comparisonValue;
+		ctx.getLogger().log(Constants.DEBUG_LEVEL, message);
 
-		(new IfElse(ctx)).ifElse(group, name, testValue, operator, comparisonValue, ifTrue, ifFalse, elevateToGlobal);
+		(new IfElse(ctx)).setElevate(elevateToGlobal).setCfg(cfg)
+				.ifElse(group, name, testValue, operator, comparisonValue, ifTrue, ifFalse);
 	}
 
 }
