@@ -62,7 +62,7 @@ public class IfElse {
 	}
 
 	/**
-	 * Setter to control evlevation to global context.
+	 * Setter to control elevation to global context.
 	 *
 	 * @param elevate Flag indicating if variable should be make global.
 	 * @return self
