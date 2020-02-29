@@ -70,31 +70,10 @@ public class SwitchCaseStepPlugin implements StepPlugin {
 	@Override
 	public void executeStep(final PluginStepContext ctx, final Map<String, Object> cfg) throws StepException {
 
-		group = cfg.getOrDefault("group", this.group).toString();
-		name = cfg.getOrDefault("name", this.name).toString();
-		cases = cfg.getOrDefault("cases", this.cases).toString();
-		testValue = cfg.getOrDefault("testValue", this.testValue).toString();
 		elevateToGlobal = cfg.getOrDefault("elevateToGlobal", String.valueOf(elevateToGlobal)).equals("true");
 
-		boolean globalHasDefault = defaultValue != null && defaultValue.length() > 0;
-		boolean cfgHasDefault = cfg.containsKey(CFG_DEFAULT_VALUE);
-		if (cfgHasDefault) {
-			if (cfg.get(CFG_DEFAULT_VALUE) == null) {
-				this.defaultValue = null;
-			} else {
-				this.defaultValue = cfg.get(CFG_DEFAULT_VALUE).toString();
-			}
-		}
-
-		ctx.getLogger().log(Constants.DEBUG_LEVEL,
-				"Setting " + group + "." + name + " based on " + testValue + " " + cases);
-
 		try {
-			if (cfgHasDefault || globalHasDefault) {
-				(new Switch(ctx)).switchCase(group, name, cases, testValue, defaultValue, elevateToGlobal);
-			} else {
-				(new Switch(ctx)).switchCase(group, name, cases, testValue, elevateToGlobal);
-			}
+			(new Switch(ctx, cfg, defaultValue)).switchCase(group, name, cases, testValue, elevateToGlobal);
 		} catch (JsonProcessingException e) {
 			throw new StepException(e.getMessage(), Switch.Causes.INVALID_JSON);
 		}

@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.dtolabs.rundeck.core.execution.workflow.steps.StepException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,20 +73,6 @@ public class SwitchCaseNodeStepPluginTest {
 	}
 
 	@Test
-	public void testEnsureStringIsJsonObject() {
-		assertEquals("", Switch.ensureStringIsJsonObject(null));
-		String given = "\"a\": \"1\"";
-		String expected = "{" + given + "}";
-		assertEquals(expected, Switch.ensureStringIsJsonObject(given));
-		assertEquals(expected, Switch.ensureStringIsJsonObject(given + ","));
-		assertEquals(expected, Switch.ensureStringIsJsonObject(given + "}"));
-		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given));
-		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given + "}"));
-		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given + ",}"));
-		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given + ", } "));
-	}
-
-	@Test
 	public void runTestOne() throws NodeStepException {
 		Map<String, String> cases = ImmutableMap.<String, String>builder().put("k1", "v1").put("k2", "v2").build();
 		this.runTest("v1", "k1", cases, defaultValue);
@@ -103,51 +90,12 @@ public class SwitchCaseNodeStepPluginTest {
 		this.runTest(testValue, "k3", cases, defaultValue);
 	}
 
-	@Test
-	public void runTestDefaultIsNull() throws NodeStepException {
-		Map<String, Object> configuration = new HashMap<>();
-		configuration.put("defaultValue", null);
-		this.runTestNoDefault(configuration);
-	}
-
-	@Test
-	public void runTestNoDefaultValue() throws NodeStepException {
-		Map<String, Object> configuration = new HashMap<>();
-		this.runTestNoDefault(configuration);
-	}
-
-	@Test
-	public void testStrippingTrailingComma() throws NodeStepException {
-		StringBuffer caseString = new StringBuffer();
-		Map<String, String> cases = ImmutableMap.<String, String>builder().put("k1", "v1").put("k2", "v2").build();
-		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append(","));
-		validInput(caseString.toString());
-	}
-
 	@Test(expected = NodeStepException.class)
 	public void testInvalidCases() throws NodeStepException {
 		StringBuffer caseString = new StringBuffer();
 		Map<String, String> cases = ImmutableMap.<String, String>builder().put("k1", "v1").put("k2", "v2").build();
 		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append("."));
 		invalidInput(caseString.toString());
-	}
-
-	private void validInput(String caseString)
-			throws NodeStepException {
-
-		Map<String, Object> configuration = new HashMap<>();
-		configuration.put("group", group);
-		configuration.put("name", name);
-		configuration.put("cases", caseString);
-		configuration.put("testValue", testValue);
-		configuration.put("defaultValue", defaultValue);
-
-		when(context.getOutputContext()).thenReturn(sharedOutputContext);
-		when(context.getLogger()).thenReturn(logger);
-
-		this.plugin.executeNodeStep(context, configuration, node);
-		verify(context, times(1)).getOutputContext();
-		verify(sharedOutputContext, times(1)).addOutput(eq(group), eq(name), eq(defaultValue));
 	}
 
 	private void invalidInput(String caseString)

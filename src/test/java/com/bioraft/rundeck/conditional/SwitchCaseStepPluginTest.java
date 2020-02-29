@@ -15,6 +15,7 @@
  */
 package com.bioraft.rundeck.conditional;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
@@ -53,7 +54,7 @@ public class SwitchCaseStepPluginTest {
 
 	@Mock
 	PluginLogger logger;
-	
+
 	@Mock
 	SharedOutputContext sharedOutputContext;
 
@@ -65,6 +66,20 @@ public class SwitchCaseStepPluginTest {
 	@Before
 	public void setUp() {
 		this.plugin = new SwitchCaseStepPlugin();
+	}
+
+	@Test
+	public void testEnsureStringIsJsonObject() {
+		assertEquals("", Switch.ensureStringIsJsonObject(null));
+		String given = "\"a\": \"1\"";
+		String expected = "{" + given + "}";
+		assertEquals(expected, Switch.ensureStringIsJsonObject(given));
+		assertEquals(expected, Switch.ensureStringIsJsonObject(given + ","));
+		assertEquals(expected, Switch.ensureStringIsJsonObject(given + "}"));
+		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given));
+		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given + "}"));
+		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given + ",}"));
+		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given + ", } "));
 	}
 
 	@Test
@@ -202,6 +217,28 @@ public class SwitchCaseStepPluginTest {
 		verify(sharedOutputContext, times(1)).addOutput(eq(group), eq(name), eq(expected));
 	}
 
+	public void runTestNoDefault(Map<String, Object> configuration) throws StepException {
+		String group = "raft";
+		String name = "test";
+
+		Map<String, String> cases = ImmutableMap.<String, String>builder().put("k1", "v1").put("k2", "v2").build();
+		StringBuilder caseString = new StringBuilder();
+		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append(","));
+		caseString.setLength(caseString.length() - 1);
+		configuration.put("cases", caseString.toString());
+
+		configuration.put("group", group);
+		configuration.put("name", name);
+		configuration.put("testValue", "v3");
+
+		when(context.getOutputContext()).thenReturn(sharedOutputContext);
+		when(context.getLogger()).thenReturn(logger);
+
+		this.plugin.executeStep(context, configuration);
+		verify(context, never()).getOutputContext();
+		verify(sharedOutputContext, never()).addOutput(any(String.class), any(String.class), any(String.class));
+	}
+
 	private void runTestGlobal(String expected, String testValue, Map<String, String> cases, String defaultValue, int mult)
 			throws StepException {
 		String group = "raft";
@@ -224,27 +261,5 @@ public class SwitchCaseStepPluginTest {
 		this.plugin.executeStep(context, configuration);
 		verify(context, times(mult * 2)).getOutputContext();
 		verify(sharedOutputContext, times(mult)).addOutput(eq(group), eq(name), eq(expected));
-	}
-
-	public void runTestNoDefault(Map<String, Object> configuration) throws StepException {
-		String group = "raft";
-		String name = "test";
-
-		Map<String, String> cases = ImmutableMap.<String, String>builder().put("k1", "v1").put("k2", "v2").build();
-		StringBuilder caseString = new StringBuilder();
-		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append(","));
-		caseString.setLength(caseString.length() - 1);
-		configuration.put("cases", caseString.toString());
-
-		configuration.put("group", group);
-		configuration.put("name", name);		
-		configuration.put("testValue", "v3");
-
-		when(context.getOutputContext()).thenReturn(sharedOutputContext);
-		when(context.getLogger()).thenReturn(logger);
-
-		this.plugin.executeStep(context, configuration);
-		verify(context, never()).getOutputContext();
-		verify(sharedOutputContext, never()).addOutput(any(String.class), any(String.class), any(String.class));
 	}
 }
