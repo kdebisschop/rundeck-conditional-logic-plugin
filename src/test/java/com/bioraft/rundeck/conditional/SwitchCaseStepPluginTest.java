@@ -25,7 +25,6 @@ import static org.mockito.Mockito.when;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.dtolabs.rundeck.core.execution.workflow.steps.node.NodeStepException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
