@@ -45,7 +45,7 @@ import com.google.common.collect.ImmutableMap;
  * @since 2019-12-11
  */
 @RunWith(MockitoJUnitRunner.class)
-public class SwitchCaseStepPluginTest {
+public class SwitchCaseStepPluginTest extends SwitchTestBase {
 
 	SwitchCaseStepPlugin plugin;
 
@@ -157,7 +157,7 @@ public class SwitchCaseStepPluginTest {
 		StringBuffer caseString = new StringBuffer();
 		Map<String, String> cases = ImmutableMap.<String, String>builder().put("k1", "v1").put("k2", "v2").build();
 		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append("."));
-		invalidInput(caseString.toString());
+		invalidInput(caseString);
 	}
 
 	private void validInput(String caseString)
@@ -178,15 +178,10 @@ public class SwitchCaseStepPluginTest {
 		verify(sharedOutputContext, times(1)).addOutput(eq(group), eq(name), eq(defaultValue));
 	}
 
-	private void invalidInput(String caseString)
+	private void invalidInput(StringBuffer caseString)
 			throws StepException {
 
-		Map<String, Object> configuration = new HashMap<>();
-		configuration.put("group", group);
-		configuration.put("name", name);
-		configuration.put("cases", caseString);
-		configuration.put("testValue", testValue);
-		configuration.put("defaultValue", defaultValue);
+		Map<String, Object> configuration = getConfiguration(testValue, caseString, defaultValue);
 
 		when(context.getOutputContext()).thenReturn(sharedOutputContext);
 		when(context.getLogger()).thenReturn(logger);
@@ -196,18 +191,11 @@ public class SwitchCaseStepPluginTest {
 
 	private void runTest(String expected, String testValue, Map<String, String> cases, String defaultValue)
 			throws StepException {
-		String group = "raft";
-		String name = "test";
 		StringBuffer caseString = new StringBuffer();
 		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append(","));
 		caseString.setLength(caseString.length() - 1);
 
-		Map<String, Object> configuration = new HashMap<>();
-		configuration.put("group", group);
-		configuration.put("name", name);
-		configuration.put("cases", caseString);
-		configuration.put("testValue", testValue);
-		configuration.put("defaultValue", defaultValue);
+		Map<String, Object> configuration = getConfiguration(testValue, caseString, defaultValue);
 
 		when(context.getOutputContext()).thenReturn(sharedOutputContext);
 		when(context.getLogger()).thenReturn(logger);
@@ -218,9 +206,6 @@ public class SwitchCaseStepPluginTest {
 	}
 
 	public void runTestNoDefault(Map<String, Object> configuration) throws StepException {
-		String group = "raft";
-		String name = "test";
-
 		Map<String, String> cases = ImmutableMap.<String, String>builder().put("k1", "v1").put("k2", "v2").build();
 		StringBuilder caseString = new StringBuilder();
 		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append(","));
@@ -247,12 +232,7 @@ public class SwitchCaseStepPluginTest {
 		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append(","));
 		caseString.setLength(caseString.length() - 1);
 
-		Map<String, Object> configuration = new HashMap<>();
-		configuration.put("group", group);
-		configuration.put("name", name);
-		configuration.put("cases", caseString);
-		configuration.put("testValue", testValue);
-		configuration.put("defaultValue", defaultValue);
+		Map<String, Object> configuration = getConfiguration(testValue, caseString, defaultValue);
 		configuration.put("elevateToGlobal", "true");
 
 		when(context.getOutputContext()).thenReturn(sharedOutputContext);
