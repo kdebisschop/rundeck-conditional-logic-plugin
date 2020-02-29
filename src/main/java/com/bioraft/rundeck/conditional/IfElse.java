@@ -61,6 +61,12 @@ public class IfElse {
 		this.ctx = ctx;
 	}
 
+	/**
+	 * Setter to control elevation to global context.
+	 *
+	 * @param elevate Flag indicating if variable should be make global.
+	 * @return self
+	 */
 	public IfElse setElevate(boolean elevate) {
 		this.elevate = elevate;
 		return this;
@@ -110,7 +116,7 @@ public class IfElse {
 		}
 
 		if (matched.equals("")) {
-			if (ifFalse == null || ifFalse.length() == 0) {
+			if (ifFalse.length() == 0) {
 				ctx.getLogger().log(Constants.DEBUG_LEVEL, "No match, default is empty.");
 				return;
 			}

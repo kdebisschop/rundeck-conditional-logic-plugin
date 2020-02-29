@@ -39,13 +39,30 @@ public class Switch {
 
 	private PluginStepContext ctx;
 
+	private Map<String, Object> cfg;
+
+	private String defaultValue;
+
 	/**
-	 * Constructor sets PluginStepContext.
+	 * Constructor sets PluginStepContext, configuration map, and default value.
 	 *
 	 * @param ctx Plugin step context
+	 * @param cfg Configuration map.
+	 * @param defaultValue The default value, if defined.
 	 */
-	public Switch(PluginStepContext ctx) {
+	public Switch(PluginStepContext ctx, Map<String, Object> cfg, String defaultValue) {
 		this.ctx = ctx;
+		this.cfg = cfg;
+
+		boolean cfgHasDefault = cfg.containsKey(CFG_DEFAULT_VALUE);
+		if (cfgHasDefault) {
+			if (cfg.get(CFG_DEFAULT_VALUE) == null) {
+				this.defaultValue = null;
+			} else {
+				this.defaultValue = cfg.get(CFG_DEFAULT_VALUE).toString();
+			}
+		}
+
 	}
 
 	/**
@@ -56,14 +73,21 @@ public class Switch {
 	 * @param name         The name of the variable.
 	 * @param cases        The switch cases as test1:value1;test2:value2
 	 * @param test         The string to test the cases against.
-	 * @param defaultValue The value to return if no cases match
 	 * @param elevate      If specified, also create a variable in global export
 	 *                     context.
 	 */
-	public void switchCase(String group, String name, String cases, String test, String defaultValue, boolean elevate) throws JsonProcessingException {
+	public void switchCase(String group, String name, String cases, String test, boolean elevate) throws JsonProcessingException {
+		group = cfg.getOrDefault("group", group).toString();
+		name = cfg.getOrDefault("name", name).toString();
+		cases = cfg.getOrDefault("cases", cases).toString();
+		test = cfg.getOrDefault("testValue", test).toString();
+
+		String message = "Setting " + group + "." + name + " based on " + test + " " + cases;
+		ctx.getLogger().log(Constants.DEBUG_LEVEL, message);
+
 		// If no case was matched, assign defaultValue if it is not null.
 		try {
-			if (!switchCase(group, name, cases, test, elevate)) {
+			if (!switchCase2(group, name, cases, test, elevate)) {
 				if (defaultValue != null && defaultValue.length() > 0) {
 					addOutput(elevate, group, name, defaultValue);
 					ctx.getLogger().log(Constants.DEBUG_LEVEL, "No match, using default.");
@@ -89,7 +113,7 @@ public class Switch {
 	 * 
 	 * @return True if matched, false otherwise.
 	 */
-	public boolean switchCase(String group, String name, String cases, String test, boolean elevate) throws JsonProcessingException {
+	public boolean switchCase2(String group, String name, String cases, String test, boolean elevate) throws JsonProcessingException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode map = objectMapper.readTree(ensureStringIsJsonObject(cases));
 		Iterator<Map.Entry<String, JsonNode>> iterator = map.fields();

@@ -17,7 +17,6 @@ package com.bioraft.rundeck.conditional;
 
 import java.util.Map;
 
-import com.dtolabs.rundeck.core.Constants;
 import com.dtolabs.rundeck.core.execution.workflow.steps.StepException;
 import com.dtolabs.rundeck.core.plugins.Plugin;
 import com.dtolabs.rundeck.plugins.ServiceNameConstants;
@@ -31,7 +30,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import static com.dtolabs.rundeck.core.plugins.configuration.StringRenderingConstants.CODE_SYNTAX_MODE;
 import static com.dtolabs.rundeck.core.plugins.configuration.StringRenderingConstants.DISPLAY_TYPE_KEY;
-import static com.bioraft.rundeck.conditional.Switch.CFG_DEFAULT_VALUE;
 
 /**
  * Workflow Node Step Plug-in to choose one of several values to uplift into a
@@ -70,27 +68,10 @@ public class SwitchCaseStepPlugin implements StepPlugin {
 	@Override
 	public void executeStep(final PluginStepContext ctx, final Map<String, Object> cfg) throws StepException {
 
-		group = cfg.getOrDefault("group", this.group).toString();
-		name = cfg.getOrDefault("name", this.name).toString();
-		cases = cfg.getOrDefault("cases", this.cases).toString();
-		testValue = cfg.getOrDefault("testValue", this.testValue).toString();
 		elevateToGlobal = cfg.getOrDefault("elevateToGlobal", String.valueOf(elevateToGlobal)).equals("true");
 
-		boolean globalHasDefault = defaultValue != null && defaultValue.length() > 0;
-		boolean cfgHasDefault = cfg.containsKey(CFG_DEFAULT_VALUE) && cfg.get(CFG_DEFAULT_VALUE) != null;
-		if (cfgHasDefault) {
-			this.defaultValue = cfg.get(CFG_DEFAULT_VALUE).toString();
-		}
-
-		ctx.getLogger().log(Constants.DEBUG_LEVEL,
-				"Setting " + group + "." + name + " based on " + testValue + " " + cases);
-
 		try {
-			if (cfgHasDefault || globalHasDefault) {
-				(new Switch(ctx)).switchCase(group, name, cases, testValue, defaultValue, elevateToGlobal);
-			} else {
-				(new Switch(ctx)).switchCase(group, name, cases, testValue, elevateToGlobal);
-			}
+			(new Switch(ctx, cfg, defaultValue)).switchCase(group, name, cases, testValue, elevateToGlobal);
 		} catch (JsonProcessingException e) {
 			throw new StepException(e.getMessage(), Switch.Causes.INVALID_JSON);
 		}

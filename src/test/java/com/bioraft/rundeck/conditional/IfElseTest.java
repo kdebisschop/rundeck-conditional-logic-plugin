@@ -15,8 +15,8 @@
  */
 package com.bioraft.rundeck.conditional;
 
+import com.dtolabs.rundeck.core.dispatcher.ContextView;
 import com.dtolabs.rundeck.core.execution.workflow.SharedOutputContext;
-import com.dtolabs.rundeck.core.execution.workflow.steps.StepException;
 import com.dtolabs.rundeck.plugins.PluginLogger;
 import com.dtolabs.rundeck.plugins.step.PluginStepContext;
 import org.junit.Before;
@@ -60,7 +60,7 @@ public class IfElseTest {
 	}
 
 	@Test
-	public void runTrueTests() throws StepException {
+	public void runTrueTests() {
 		int i = 0;
 		this.runTestTrue("apple", "eq", "apple", ++i);
 		this.runTestTrue("apple", "ne", "pear", ++i);
@@ -79,7 +79,7 @@ public class IfElseTest {
 	}
 
 	@Test
-	public void runFalseTests() throws StepException {
+	public void runFalseTests() {
 		int i = 0;
 		this.runTestFalse("apple", "eq", "apples", ++i);
 		this.runTestFalse("apple", "ne", "apple", ++i);
@@ -97,7 +97,33 @@ public class IfElseTest {
 		this.runTestFalse("2.0", "!=", "2.00", ++i);
 	}
 
-	private void runTestTrue(String testValue, String operator, String comparison, int calls) throws StepException {
+	@Test
+	public void runNoDefaultTests() {
+		when(context.getOutputContext()).thenReturn(sharedOutputContext);
+		when(context.getLogger()).thenReturn(logger);
+
+		this.plugin.setElevate(false).setCfg(configuration).
+				ifElse("raft", "test", "apple", "EQ", "apples", "1", "");
+		verify(context, never()).getOutputContext();
+		verify(sharedOutputContext, never()).addOutput(anyString(), anyString(), anyString());
+	}
+
+	@Test
+	public void testElevation() {
+		String group = "raft";
+		String name = "test";
+		String ifTrue = "1";
+
+		when(context.getOutputContext()).thenReturn(sharedOutputContext);
+		when(context.getLogger()).thenReturn(logger);
+
+		this.plugin.setElevate(true).setCfg(configuration).ifElse(group, name, name, "EQ", name, ifTrue, ifTrue);
+		verify(context, times(2)).getOutputContext();
+		verify(sharedOutputContext, times(1)).addOutput(eq(group), eq(name), eq(ifTrue));
+		verify(sharedOutputContext, times(1)).addOutput(any(ContextView.class), eq("export"), anyString(), eq(ifTrue));
+	}
+
+	private void runTestTrue(String testValue, String operator, String comparison, int calls) {
 		String group = "raft";
 		String name = "test";
 		String ifTrue = "1";
@@ -111,8 +137,7 @@ public class IfElseTest {
 		verify(sharedOutputContext, atLeast(calls)).addOutput(eq(group), eq(name), eq(ifTrue));
 	}
 
-	private void runTestFalse(String testValue, String operator, String comparison, int calls)
-			throws StepException {
+	private void runTestFalse(String testValue, String operator, String comparison, int calls) {
 		String group = "boat";
 		String name = "real";
 		String ifTrue = "yes";

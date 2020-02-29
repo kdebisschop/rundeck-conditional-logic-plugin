@@ -15,7 +15,6 @@
  */
 package com.bioraft.rundeck.conditional;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
@@ -23,7 +22,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
@@ -46,7 +44,7 @@ import com.google.common.collect.ImmutableMap;
  * @since 2019-12-11
  */
 @RunWith(MockitoJUnitRunner.class)
-public class SwitchCaseNodeStepPluginTest {
+public class SwitchCaseNodeStepPluginTest extends SwitchTestBase {
 
 	SwitchCaseNodeStepPlugin plugin;
 
@@ -61,28 +59,10 @@ public class SwitchCaseNodeStepPluginTest {
 
 	@Mock
 	INodeEntry node;
-	private final String group = "raft";
-	private final String name = "test";
-	private final String testValue = "any";
-	private final String defaultValue = "any";
 
 	@Before
 	public void setUp() {
 		this.plugin = new SwitchCaseNodeStepPlugin();
-	}
-
-	@Test
-	public void testEnsureStringIsJsonObject() {
-		assertEquals("", Switch.ensureStringIsJsonObject(null));
-		String given = "\"a\": \"1\"";
-		String expected = "{" + given + "}";
-		assertEquals(expected, Switch.ensureStringIsJsonObject(given));
-		assertEquals(expected, Switch.ensureStringIsJsonObject(given + ","));
-		assertEquals(expected, Switch.ensureStringIsJsonObject(given + "}"));
-		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given));
-		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given + "}"));
-		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given + ",}"));
-		assertEquals(expected, Switch.ensureStringIsJsonObject("{" + given + ", } "));
 	}
 
 	@Test
@@ -103,62 +83,18 @@ public class SwitchCaseNodeStepPluginTest {
 		this.runTest(testValue, "k3", cases, defaultValue);
 	}
 
-	@Test
-	public void runTestDefaultIsNull() throws NodeStepException {
-		Map<String, Object> configuration = new HashMap<>();
-		configuration.put("defaultValue", null);
-		this.runTestNoDefault(configuration);
-	}
-
-	@Test
-	public void runTestNoDefaultValue() throws NodeStepException {
-		Map<String, Object> configuration = new HashMap<>();
-		this.runTestNoDefault(configuration);
-	}
-
-	@Test
-	public void testStrippingTrailingComma() throws NodeStepException {
-		StringBuffer caseString = new StringBuffer();
-		Map<String, String> cases = ImmutableMap.<String, String>builder().put("k1", "v1").put("k2", "v2").build();
-		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append(","));
-		validInput(caseString.toString());
-	}
-
 	@Test(expected = NodeStepException.class)
 	public void testInvalidCases() throws NodeStepException {
 		StringBuffer caseString = new StringBuffer();
 		Map<String, String> cases = ImmutableMap.<String, String>builder().put("k1", "v1").put("k2", "v2").build();
 		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append("."));
-		invalidInput(caseString.toString());
+		invalidInput(caseString);
 	}
 
-	private void validInput(String caseString)
+	private void invalidInput(StringBuffer caseString)
 			throws NodeStepException {
 
-		Map<String, Object> configuration = new HashMap<>();
-		configuration.put("group", group);
-		configuration.put("name", name);
-		configuration.put("cases", caseString);
-		configuration.put("testValue", testValue);
-		configuration.put("defaultValue", defaultValue);
-
-		when(context.getOutputContext()).thenReturn(sharedOutputContext);
-		when(context.getLogger()).thenReturn(logger);
-
-		this.plugin.executeNodeStep(context, configuration, node);
-		verify(context, times(1)).getOutputContext();
-		verify(sharedOutputContext, times(1)).addOutput(eq(group), eq(name), eq(defaultValue));
-	}
-
-	private void invalidInput(String caseString)
-			throws NodeStepException {
-
-		Map<String, Object> configuration = new HashMap<>();
-		configuration.put("group", group);
-		configuration.put("name", name);
-		configuration.put("cases", caseString);
-		configuration.put("testValue", testValue);
-		configuration.put("defaultValue", defaultValue);
+		Map<String, Object> configuration = getConfiguration(testValue, caseString, defaultValue);
 
 		when(context.getOutputContext()).thenReturn(sharedOutputContext);
 		when(context.getLogger()).thenReturn(logger);
@@ -172,12 +108,7 @@ public class SwitchCaseNodeStepPluginTest {
 		cases.forEach((k, v) -> caseString.append('"').append(k).append('"').append(":").append('"').append(v).append('"').append(","));
 		caseString.setLength(caseString.length() - 1);
 
-		Map<String, Object> configuration = new HashMap<>();
-		configuration.put("group", group);
-		configuration.put("name", name);
-		configuration.put("cases", caseString);
-		configuration.put("testValue", testValue);
-		configuration.put("defaultValue", defaultValue);
+		Map<String, Object> configuration = getConfiguration(testValue, caseString, defaultValue);
 
 		when(context.getOutputContext()).thenReturn(sharedOutputContext);
 		when(context.getLogger()).thenReturn(logger);
