@@ -110,7 +110,7 @@ public class IfElse {
 		}
 
 		if (matched.equals("")) {
-			if (ifFalse == null || ifFalse.length() == 0) {
+			if (ifFalse.length() == 0) {
 				ctx.getLogger().log(Constants.DEBUG_LEVEL, "No match, default is empty.");
 				return;
 			}
