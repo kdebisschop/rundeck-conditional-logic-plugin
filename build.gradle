@@ -83,6 +83,10 @@ dependencies {
     )
 }
 
+plugins.withType(JacocoPlugin) {
+    tasks["test"].finalizedBy 'jacocoTestReport'
+}
+
 // task to copy plugin libs to output/lib dir
 task copyToLib(type: Copy) {
     into "$buildDir/output/lib"

@@ -91,8 +91,7 @@ public class SwitchCaseStepPlugin implements StepPlugin {
 			} else {
 				(new Switch(ctx)).switchCase(group, name, cases, testValue, elevateToGlobal);
 			}
-		} catch (
-				JsonProcessingException e) {
+		} catch (JsonProcessingException e) {
 			throw new StepException(e.getMessage(), Switch.Causes.INVALID_JSON);
 		}
 	}
