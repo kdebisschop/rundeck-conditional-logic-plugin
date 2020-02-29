@@ -80,9 +80,13 @@ public class SwitchCaseNodeStepPlugin implements NodeStepPlugin {
 		elevateToGlobal = cfg.getOrDefault("elevateToGlobal", String.valueOf(elevateToGlobal)).equals("true");
 
 		boolean globalHasDefault = defaultValue != null && defaultValue.length() > 0;
-		boolean cfgHasDefault = cfg.containsKey(CFG_DEFAULT_VALUE) && cfg.get(CFG_DEFAULT_VALUE) != null;
+		boolean cfgHasDefault = cfg.containsKey(CFG_DEFAULT_VALUE);
 		if (cfgHasDefault) {
-			this.defaultValue = cfg.get(CFG_DEFAULT_VALUE).toString();
+			if (cfg.get(CFG_DEFAULT_VALUE) == null) {
+				this.defaultValue = null;
+			} else {
+				this.defaultValue = cfg.get(CFG_DEFAULT_VALUE).toString();
+			}
 		}
 
 		String message = "Setting " + group + "." + name + " based on " + testValue + " " + cases;
