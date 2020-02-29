@@ -61,6 +61,12 @@ public class IfElse {
 		this.ctx = ctx;
 	}
 
+	/**
+	 * Setter to control evlevation to global context.
+	 *
+	 * @param elevate Flag indicating if variable should be make global.
+	 * @return self
+	 */
 	public IfElse setElevate(boolean elevate) {
 		this.elevate = elevate;
 		return this;
