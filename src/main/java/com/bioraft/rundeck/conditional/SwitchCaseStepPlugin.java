@@ -17,7 +17,6 @@ package com.bioraft.rundeck.conditional;
 
 import java.util.Map;
 
-import com.dtolabs.rundeck.core.Constants;
 import com.dtolabs.rundeck.core.execution.workflow.steps.StepException;
 import com.dtolabs.rundeck.core.plugins.Plugin;
 import com.dtolabs.rundeck.plugins.ServiceNameConstants;
@@ -31,7 +30,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import static com.dtolabs.rundeck.core.plugins.configuration.StringRenderingConstants.CODE_SYNTAX_MODE;
 import static com.dtolabs.rundeck.core.plugins.configuration.StringRenderingConstants.DISPLAY_TYPE_KEY;
-import static com.bioraft.rundeck.conditional.Switch.CFG_DEFAULT_VALUE;
 
 /**
  * Workflow Node Step Plug-in to choose one of several values to uplift into a
